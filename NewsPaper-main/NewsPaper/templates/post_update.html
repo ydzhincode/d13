@@ -1,0 +1,23 @@
+{% extends 'default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Update post
+{% endblock title %}
+
+{% block content %}
+<h1>Редактирование поста</h1>
+<h2>Вы уверены, что хотите изменить пост?</h2>
+<h3>{{ time_now|date:'M d Y' }}</h3>
+<br>
+<form method="POST">
+    {% csrf_token %}
+    {{ form }}
+    <hr>
+    <input type="submit" value="Внести изменения">
+</form>
+<br>
+<a href="{% url 'news' %}">
+    <button>Назад к постам</button>
+</a>
+{% endblock content %}

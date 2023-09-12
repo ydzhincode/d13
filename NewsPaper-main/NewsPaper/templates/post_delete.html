@@ -1,0 +1,27 @@
+{% extends 'default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Delete post
+{% endblock title %}
+
+{% block content %}
+
+<h1>Вы действительно хотите удалить данный пост?</h1>
+<h2>{{ post.title|censor }}</h2>
+<h3>{{ post.dateCreation|date:'d-N-Y H:i' }} Автор: {{ post.author }}</h3>
+<p>{{ post.text|censor|truncatewords:20 }}</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Подтвердить">
+</form>
+<hr>
+<a href="{% url 'news_detail' post.id %}">
+    <button>Назад к посту</button>
+</a>
+<a href="{% url 'news'  %}">
+    <button>На главную страницу</button>
+</a>
+
+{% endblock content %}

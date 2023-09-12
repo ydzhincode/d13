@@ -1,0 +1,66 @@
+from news.models import *
+
+user1 = User.objects.create(username='Mr.First', first_name='One')
+user2 = User.objects.create(username='Mr.Second', first_name='Two')
+
+Author.objects.create(authorUser=user1)
+Author.objects.create(authorUser=user2)
+
+Category.objects.create(name='IT')
+Category.objects.create(name='Education')
+Category.objects.create(name='Django')
+Category.objects.create(name='Other')
+
+Post.objects.create(author=Author.objects.get(authorUser=User.objects.get(username='Mr.First')), categoryType='NW', title='news-1', text='Text for news-1')
+Post.objects.create(author=Author.objects.get(authorUser=User.objects.get(username='Mr.First')), categoryType='AR', title='article-1', text='Text for article-1')
+Post.objects.create(author=Author.objects.get(authorUser=User.objects.get(username='Mr.Second')), categoryType='AR', title='article-2', text='Text for article-2')
+
+p1 = Post.objects.get(pk=1)
+p2 = Post.objects.get(pk=2)
+p3 = Post.objects.get(pk=3)
+c1 = Category.objects.get(name='IT')
+c2 = Category.objects.get(name='Education')
+c3 = Category.objects.get(name='Django')
+c4 = Category.objects.get(name='Other')
+p1.postCategory.add(c2)
+p2.postCategory.add(c1, c2)
+p3.postCategory.add(c1, c4)
+
+Comment.objects.create(commentUser=User.objects.get(username='Mr.First'), commentPost = Post.objects.get(pk=1), text='My name is Mr.First')
+Comment.objects.create(commentUser=User.objects.get(username='Mr.Second'), commentPost = Post.objects.get(pk=1), text='My name is Mr.Second')
+Comment.objects.create(commentUser=User.objects.get(username='Mr.First'), commentPost = Post.objects.get(pk=2), text='My name is Mr.First')
+Comment.objects.create(commentUser=User.objects.get(username='Mr.Second'), commentPost = Post.objects.get(pk=3), text='My name is Mr.Second')
+Comment.objects.create(commentUser=User.objects.get(username='Mr.Second'), commentPost = Post.objects.get(pk=3), text='My name is Mr.Second')
+
+Post.objects.get(pk=1).like()
+Post.objects.get(pk=1).like()
+Post.objects.get(pk=1).like()
+Post.objects.get(pk=1).like()
+Post.objects.get(pk=2).like()
+Post.objects.get(pk=2).like()
+Post.objects.get(pk=2).like()
+Post.objects.get(pk=2).like()
+Post.objects.get(pk=3).like()
+Post.objects.get(pk=3).like()
+Post.objects.get(pk=1).dislike()
+Post.objects.get(pk=2).dislike()
+Comment.objects.get(pk=1).like()
+Comment.objects.get(pk=1).like()
+Comment.objects.get(pk=1).dislike()
+Comment.objects.get(pk=2).like()
+Comment.objects.get(pk=2).like()
+Comment.objects.get(pk=2).like()
+Comment.objects.get(pk=2).dislike()
+Comment.objects.get(pk=3).like()
+
+Author.objects.get(authorUser = User.objects.get(username="Mr.First")).update_rating()
+Author.objects.get(authorUser = User.objects.get(username="Mr.Second")).update_rating()
+
+best_author = Author.objects.all().order_by('-ratingAuthor').first()
+print(f'Лучший автор: {best_author.authorUser.username} с рейтингом {best_author.ratingAuthor}')
+
+best_post = Post.objects.all().order_by('-rating').first()
+print(best_post.dateCreation, best_post.author.authorUser.username, best_post.rating, best_post.title, best_post.preview())
+
+bp_comments = Comment.objects.filter(commentPost = best_post)
+bp_comments.values('dateCreation', 'commentUser__username', 'rating', 'text')

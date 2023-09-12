@@ -1,0 +1,75 @@
+{% extends 'default.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+Категория {{ category }}
+{% endblock title %}
+
+{% block content %}
+<h1>Новости из категории {{ category }}</h1>
+
+{% if user not in category.subscribers.filter %}
+
+<a class="btn btn-info" href="{% url 'subscribe' category.id %}">
+    Подписаться на категорию
+</a>
+{% else %}
+<h6>
+    Вы уже подписаны на эту категорию.
+    <a class="btn btn-info" href="{% url 'unsubscribe' category.id %}">
+        Нажмите
+    </a>
+    чтобы отписаться от рассылки.
+
+</h6>
+{% endif %}
+
+{% if cat_posts|length > 0 %}
+<table>
+    <tr>
+        <td><u>Заголовок</u></td>
+        <td width="150"><u>Дата</u></td>
+        <td><u>Превью</u></td>
+    </tr>
+    {% for post in cat_posts %}
+    <tr>
+        <td>
+            <a href="{% url 'news_detail' post.id %}">{{ post.title|censor }}</a>
+        </td>
+        <td>{{ post.dateCreation|date:'d-N-Y' }}</td>
+        <td>{{ post.text|censor|truncatechars:50 }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<h2>Новостей нет!</h2>
+{% endif %}
+
+<!-- Проверяем что поддерживается постраничный вывод -->
+{% if is_paginated %}
+
+<!-- Если доступна предыдущая страница, то даём ссылку на неё и самую первую страницу -->
+{% if page_obj.has_previous %}
+<a href="?page=1">Начало</a>
+<a href="?page={{ page_obj.previous_page_number }}"><<<</a>
+{% endif %}
+
+<!-- Показываем только текущую страницу и ближайшие к ней, чтобы список не тянулся и не захламлял страницу -->
+{% for num in page_obj.paginator.page_range %}
+{% if page_obj.number == num %}
+<a>{{ num }}</a>
+{% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+<a href="?page={{ num }}">{{ num }}</a>
+{% endif %}
+{% endfor %}
+
+<!-- Если есть следующая страница, то даём ссылку на неё и на самую последнюю страницу -->
+{% if page_obj.has_next %}
+<a href="?page={{ page_obj.next_page_number }}">>>></a>
+<a href="?page={{ page_obj.paginator.num_pages }}">Конец</a>
+{% endif %}
+
+{% endif %}
+
+{% endblock content %}

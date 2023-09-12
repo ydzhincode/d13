@@ -1,0 +1,18 @@
+{% extends 'default.html' %}
+
+{% block title %}
+Categories
+{% endblock title %}
+
+{% block content %}
+<h1>Категории новостей:</h1>
+
+{% for category in categories %}
+
+<div>
+    <a href="{% url 'cat_detail' category.id %}">{{ category.name }}</a>
+</div>
+
+{% endfor %}
+
+{% endblock content %}

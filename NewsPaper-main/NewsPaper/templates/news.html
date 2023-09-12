@@ -1,0 +1,71 @@
+{% extends 'default.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+News
+{% endblock title %}
+
+{% block content %}
+<h1>Последние новости: ({{ news|length }})</h1>
+
+{% if news %}
+<table>
+    <tr>
+        <td><u>Заголовок</u></td>
+        <td width="150"><u>Дата</u></td>
+        <td><u>Превью</u></td>
+    </tr>
+    {% for det_news in news %}
+    <tr>
+        <td>
+            <a href="{% url 'news_detail' det_news.id %}">{{ det_news.title|censor }}</a>
+        </td>
+        <td>{{ det_news.dateCreation|date:'d-N-Y' }}</td>
+        <td>{{ det_news.text|censor|truncatechars:50 }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<h2>Новостей нет!</h2>
+{% endif %}
+
+<!-- Проверяем что поддерживается постраничный вывод -->
+{% if is_paginated %}
+
+<!-- Если доступна предыдущая страница, то даём ссылку на неё и самую первую страницу -->
+{% if page_obj.has_previous %}
+<a href="?page=1">Начало</a>
+<a href="?page={{ page_obj.previous_page_number }}"><<<</a>
+{% endif %}
+
+<!-- Показываем только текущую страницу и ближайшие к ней, чтобы список не тянулся и не захламлял страницу -->
+{% for num in page_obj.paginator.page_range %}
+{% if page_obj.number == num %}
+<a>{{ num }}</a>
+{% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+<a href="?page={{ num }}">{{ num }}</a>
+{% endif %}
+{% endfor %}
+
+<!-- Если есть следующая страница, то даём ссылку на неё и на самую последнюю страницу -->
+{% if page_obj.has_next %}
+<a href="?page={{ page_obj.next_page_number }}">>>></a>
+<a href="?page={{ page_obj.paginator.num_pages }}">Конец</a>
+{% endif %}
+
+{% endif %}
+
+<hr>
+{% if is_not_premium %}
+
+<a class="btn btn-info" href="{% url 'getauthor' %}">
+    Хочу стать автором!
+</a>
+{% else %}
+<h3>
+    Вы являетесь автором
+</h3>
+{% endif %}
+
+{% endblock content %}

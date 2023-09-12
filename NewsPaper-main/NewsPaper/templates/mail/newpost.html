@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>!new_post</title>
+</head>
+<body>
+<h2>Новый пост в категории {{ category.name }}:</h2>
+<h2>{{ post.title }}</h2>
+<p>{{ post.text|truncatechars:50 }}</p>
+<a href="http://127.0.0.1:8000/news{% url 'news_detail' post.id %}">Читать полностью >>></a>
+</body>
+</html>
